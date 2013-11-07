@@ -15,7 +15,7 @@ varying vec3 vLightWeighting;
 
 void main() {
   vLightWeighting = uAmbientColor +
-    lighting(uaDirectionalColor, normal, uaLightingDirection);
+    lighting(uDirectionalColor, normal, uLightingDirection);
 
   gl_Position = projection * view * model * vec4(position, 1.0);
 }
