@@ -1,3 +1,4 @@
+var camera = require('basic-camera')();
 var createBuffer = require('gl-buffer');
 var createShader = require('gl-shader');
 var createVAO = require('gl-vao');
@@ -13,11 +14,14 @@ var zero = require('zeros');
 shell.on('gl-init', init);
 shell.on('gl-render', render);
 
+var gridp = [0,0,0];
 var mat4 = glm.mat4;
 var meshes = [];
+var model = mat4.identity(new Float32Array(16));
 var scale = [15,3.5,15];
 var shader;
 var t = 0;
+var tempm = mat4.identity(new Float32Array(16));
 
 function init() {
   var gl = shell.gl;
@@ -89,6 +93,35 @@ function render() {
   
   t += 1;
   
+  camera.position[0] = 0;
+  camera.position[1] = -1
+  camera.position[2] = 0;
+  
   var projection = mat4.perspective(new Float32Array(16),
     0.25*Math.PI, shell.width/shell.height, 0.05, 1000);
+  
+  var view = camera.view();
+    
+  gl.enable(gl.CULL_FACE);
+  gl.enable(gl.DEPTH_TEST);
+
+  shader.bind();
+  shader.uniforms.projection = projection;
+  shader.uniforms.view = view;
+  
+  shader.attributes.position.location = 0;
+  shader.attributes.normal.location = 1;
+  
+  for (var i = 0; i < meshes.length; i++) {
+    gridp[0] = (meshes[i].x - 0.5) * scale[0];
+    gridp[1] = -0.35 * scale[1];
+    gridp[2] = (meshes[i].y - 0.5) * scale[2];
+    
+    mat4.translate(model, tempm, gridp);
+    shader.uniforms.model = model;
+    
+    meshes[i].vao.bind();
+    gl.drawArrays(gl.TRIANGLES, 0, meshes[i].length);
+    meshes[i].vao.unbind();
+  }
 }
