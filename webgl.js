@@ -109,6 +109,10 @@ function render() {
   shader.uniforms.projection = projection;
   shader.uniforms.view = view;
   
+  shader.uniforms.uLightingDirection = [0.25, 0.25, -1];
+  shader.uniforms.uDirectionalColor = [255/255, 100/255, 140/255];
+  shader.uniforms.uAmbientColor = [110/255, 35/255, 140/255];
+  
   shader.attributes.position.location = 0;
   shader.attributes.normal.location = 1;
   
